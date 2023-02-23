@@ -1,11 +1,12 @@
-function getDiceRollArray(count){
-    return new Array(count).fill(0).map(()=>{
-      return getRandomDice()
-    });
-  }
+const getDiceRollArray = count => new Array(count).fill(0)
+  .map(()=> getRandomDice());
   
-  function getRandomDice(){
-    return Math.floor((Math.random()*6)+1)
-  }
+const getRandomDice = () => Math.floor((Math.random()*6)+1)
 
-  export {getDiceRollArray, getRandomDice} 
+const getPlaceholderHtml = count => new Array(count).fill(0)
+  .map((item)=> `<div class="placeholder-dice"></div>`).join('')
+
+const getPercentage = (remainingHealth, maximumHealth) => (remainingHealth * 100)/maximumHealth
+
+
+export {getDiceRollArray, getRandomDice, getPlaceholderHtml, getPercentage} 

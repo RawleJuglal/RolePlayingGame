@@ -1,27 +1,50 @@
-import { getDiceRollArray, getRandomDice } from "./utils";
+import { getDiceRollArray, getRandomDice, getPlaceholderHtml, getPercentage } from "./utils";
 
-function Character(data) {
+class Character{
+  constructor(data){
     Object.assign(this, data);
-  
-    this.getCharacterHtml = function (){
-      const { elementId, name, avatar, health, diceCount, getRollHtml } = this;
-        const diceHtml = getRollHtml(diceCount);
-  
-        return`<div class="character-card">
-            <h4 class="name"> ${name} </h4>
-            <img class="avatar" src="${avatar}" />
-            <div class="health">health: <b> ${health} </b></div>
-            <div class="dice-container">    
-                ${diceHtml}
-            </div>
-        </div>`
-    }
-  
-    this.getRollHtml = function getRollHtml(rollCount){
-      return getDiceRollArray(rollCount).map((die)=>{
-        return `<div class="dice">${die}</div>`
-      }).join('')
+    this.maxHealth = this.health;
+    this.diceHtml = getPlaceholderHtml(this.diceCount)
+  }
+
+  getCharacterHtml(){
+    const { name, avatar, health, diceCount, diceHtml } = this;
+    const healthBar = this.getHealthBarHtml()
+
+      return`<div class="character-card">
+          <h4 class="name"> ${name} </h4>
+          <img class="avatar" src="${avatar}" />
+          <div class="health">health: <b> ${health} </b></div>
+            ${healthBar}
+          <div class="dice-container">    
+              ${diceHtml}
+          </div>
+      </div>`
+  }
+
+  setRollHtml(){
+    const { diceCount } = this;
+    this.currentDiceScore = getDiceRollArray(diceCount)
+    this.diceHtml =  this.currentDiceScore.map(die => `<div class="dice">${die}</div>`).join('')
+  }
+
+  takeDamage(attackScoreArray){
+    const totalAttackScore = attackScoreArray.reduce((prev,curr) => prev + curr)
+    this.health -= totalAttackScore;
+    if(this.health<=0){
+        this.dead = true;
+        this.health = 0
     }
   }
 
-  export default Character;
+  getHealthBarHtml(){
+    const percent = getPercentage(this.health, this.maxHealth)
+    return `<div class="health-bar-outer">
+                <div class="health-bar-inner ${percent < 25 ? 'danger' : ''} " 
+                    style="width: ${percent}%;">
+                </div>
+            </div>`
+    }
+}
+
+export default Character;
